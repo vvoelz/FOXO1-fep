@@ -1,0 +1,111 @@
+
+; npt_new.mdp
+
+integrator               = sd       ; Langevin dynamics
+dt                       = 0.001    ; NOTE: default: 0.001ps time step
+nsteps                   = 100000   ; 100ps
+
+; Output control
+nstxout                  = 500      ; NOTE
+nstvout                  = 500      ; NOTE
+nstlog                   = 500      ; NOTE
+nstenergy                = 500      ; NOTE
+nstxout-compressed       = 500      ; NOTE: 'nstxtcout' to 'nstxout-compressed'
+compressed-x-grps        = non-Water; NOTE: 'xtc-grps' to 'compressed-x-grps'
+energygrps               = non-Water; NOte: use non-water to indicate protein
+
+; Neighborsearching and short-range nonbonded interactions
+cutoff-scheme            = verlet   ; NOTE: set default value
+nstlist                  = 10       ; Frequency to update the neighbor list: default 10 steps 
+ns_type                  = grid     ; Make a grid in the box and only check atoms in neighboring grid
+                                    ; cells when constructing a new neighbor list every nstlist steps
+pbc                      = xyz      ; use periodic boundary conditions in all directions.
+rlist                    = 0.9      ; NOTE: 0.9nm (default: 1nm) 
+                                    ; cut-off distance for the short-range neighbor list
+
+; Electrostatics
+coulombtype              = PME
+rcoulomb                 = 0.9      ; NOTE: 0.9nm (default: 1nm) the distance for the Coulomb cut-off
+
+; van der Waals
+vdwtype                  = Cut-off  ; Plain cut-off with pair list radius rlist and VdW cut-off rvdw , where rlist >= rvdw
+rvdw                     = 0.9      ; NOTE: 0.9nm (default: 1nm) the distance for the LJ or Buckingham cut-off
+
+; Apply long range dispersion corrections for Energy and Pressure
+DispCorr                 = EnerPres
+
+; Spacing for the PME/PPPM FFT grid
+fourierspacing           = 0.12     ; default: 0.12nm
+
+; EWALD/PME/PPPM parameters
+pme_order                = 4        ; Interpolation order for PME. 4 equals cubic interpolation.
+ewald_rtol               = 1e-05    ; default: 1e-05
+
+; Temperature coupling
+; tcoupl is implicitly handled by the sd integrator
+tcoupl                   = Berendsen  ; <===  Lack in new In fact no during simulation
+tc_grps                  = system
+tau_t                    = 1.0      ; time constant for coupling: 1.0ps
+ref_t                    = 300      ; reference temperature for coupling: 298K
+
+; Pressure coupling is on for NPT
+Pcoupl                   = Parrinello-Rahman
+tau_p                    = 0.5      ; time constant for coupling: 0.5ps
+compressibility          = 4.5e-05  ; NOTE: default: 4.5e-05 NOTE: for water at 1atm and 300K, it is 4.5e-05/bar
+ref_p                    = 1.0      ; reference pressure for coupling: 1bar
+
+; Free energy control stuff
+free-energy              = yes
+init_lambda_state        = 14        ; lambda index NOT lambda value
+calc_lambda_neighbors    = -1       
+                                    ; couple-moltype = Protein_chain_A <=== NOT for alchemical fep
+couple-lambda0           = vdw-q
+couple-lambda1           = vdw-q
+couple-intramol          = no       ; NOTE
+; Vectors of lambda specified here
+; Each combination is an index that is retrieved from init_lambda_state for each simulation
+; init_lambda_state        0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20
+fep_lambdas              = 0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00
+
+# fep-lambdas is different from the other lambdas keywords because all components of the lambda vector 
+# that are not speciﬁed will use fep-lambdas (including restraint-lambdas and therefore the pull code restraints)
+
+; =========================================================================================================================
+
+; DO NOT set the below lambda values in alchemical fep
+
+; vdw_lambdas              = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+; coul_lambdas             = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+; We are not transforming any bonded or restrained interactions 
+; bonded_lambdas           = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+; restraint_lambdas        = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+; Masses are not changing (particle identities are the same at lambda = 0 and lambda = 1)
+; mass_lambdas             = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+; Not doing simulated temperting here
+; temperature_lambdas      = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+
+; DO NOT set the above lambda values in alchemical fep
+
+; =========================================================================================================================
+
+nstdhdl                  = 500      ; NO nstcalcenergy, dhdl-print-energy, separate-dhdl-file in this file
+                                  
+
+; Do not generate velocities
+gen_vel                  = no 
+
+; options for bonds
+constraints              = h-bonds
+; Type of constraint algorithm
+constraint-algorithm     = lincs
+; Constrain the starting configuration
+continuation             = yes     ; we are continuing from NVT
+; Highest order in the expansion of the constraint coupling matrix
+lincs-order              = 4       ; default: 4
+
+
+
+
+
+
+

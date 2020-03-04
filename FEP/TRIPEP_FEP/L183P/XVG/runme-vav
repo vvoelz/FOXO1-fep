@@ -1,0 +1,4 @@
+python2 /Users/vv/git/alchemical-analysis/alchemical_analysis/alchemical_analysis.py -d XVG-vav/ -p md_lam -q xvg -u kJ -g -c -o out-vav
+
+# hmmm  - overlap calculation (-w) doesn't seem to work on my installation. --VAV
+
