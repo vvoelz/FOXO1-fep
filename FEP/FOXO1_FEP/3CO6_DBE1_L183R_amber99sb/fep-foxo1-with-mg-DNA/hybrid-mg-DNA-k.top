@@ -1,0 +1,32 @@
+; Include forcefield parameters
+#include "amber99sb-star-ildn-mut.ff/forcefield.itp"
+
+; Include chain topologies
+#include "new_hybrid-mg.itp"
+#include "topol_DNA_chain_A.itp"
+#include "topol_DNA_chain_B-k.itp"
+
+; Include water topology
+#include "amber99sb-star-ildn-mut.ff/tip3p.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "amber99sb-star-ildn-mut.ff/ions.itp"
+
+[ system ]
+; Name
+PMX MODEL in water
+
+[ molecules ]
+; Compound        #mols
+Protein_chain_A     1
+DNA_chain_A         1
+DNA_chain_B         1
+SOL         13819
+K                33
+CL               14
