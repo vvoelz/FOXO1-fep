@@ -15,3 +15,16 @@ I combine two topologies: one is alchemical topology, the other one is protein-m
 (6) There are 3 thermodynamic equations: each production running 1ns. 
 ```
 
+# Pipeline
+The pipeline files can be found in FOXO1-fep/FEP/FOXO1_FEP/ folder.
+There are 3 main_stage*.sh files: main_stage1.sh(top and gro prep), main_stage2.sh(EM), and main_stage3.sh(prep before upload).
+In main_stage1.sh, 2 pipeline files: pipeline_v1.sh or pipeline_v2.sh can be called and performed. 
+In pipeline_*.sh files, different job_*.sh and job_*.py files can be called and performed.
+
+
+
+
+
+
+
+
